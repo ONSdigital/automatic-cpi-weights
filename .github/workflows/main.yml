@@ -1,0 +1,36 @@
+name: Get CPI weight
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+  schedule:
+    - cron: '01 07 * * 1-5'
+
+jobs:
+  scheduled:
+    runs-on: ubuntu-latest
+    steps:
+      # This step installs node
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.x'
+      # Check out the repository so it can read the files inside of it and do other operations
+      - name: Check out repo
+        uses: actions/checkout@v2
+        
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: run script
+        run: node run.js
+        
+      - name: Commit and push the results
+        run: |
+         git config --global user.name "github-actions[bot]"
+         git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+         git add -A
+         git commit -m "GitHub Actions Results added"
+         git push
